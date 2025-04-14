@@ -23,12 +23,12 @@ public class Behavior {
   }
 
   private static void assertEmptyAtStart() {
-    Queue<Integer> q = getEphemeralQueue();
+    Queue<Integer> q = getQueue();
     assert_empty_queue(q);
   }
 
-  private static EphemeralQueue getEphemeralQueue() {
-    return new EphemeralQueue(QUEUE_CAPACITY);
+  private static RingBufferQueue getQueue() {
+    return new RingBufferQueue(QUEUE_CAPACITY);
   }
 
   private static void assertTest(boolean result) {
@@ -50,7 +50,7 @@ public class Behavior {
 
 
   private static void enqueueAndDequeueIncrementally() {
-    Queue<Integer> q = getEphemeralQueue();
+    Queue<Integer> q = getQueue();
 
     for (int i = 0; i < QUEUE_CAPACITY / 2; i++) {
       assertTest(q.add(i));
@@ -67,7 +67,7 @@ public class Behavior {
   }
 
   private static void enqueueAllAndDequeueAllPartialFill() {
-    Queue<Integer> q = getEphemeralQueue();
+    Queue<Integer> q = getQueue();
 
     for (int i = 0; i < QUEUE_CAPACITY / 2; i++) {
       assertTest(q.add(i));
@@ -97,7 +97,7 @@ public class Behavior {
   }
 
   private static void enqueueAllAndDequeueAll() {
-    Queue<Integer> q = getEphemeralQueue();
+    Queue<Integer> q = getQueue();
 
     for (int i = 0; i < QUEUE_CAPACITY; i++) {
       assertTest(q.add(i));

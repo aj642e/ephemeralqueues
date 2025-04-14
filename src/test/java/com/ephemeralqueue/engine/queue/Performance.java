@@ -19,7 +19,7 @@ public class Performance {
      * As it turns out, my implementation is 3X worse performance than
      * Array Blocking Queue and Concurrent Linked Queue.
      */
-    Queue<Integer> q = new EphemeralQueue(QUEUE_CAPACITY);
+    Queue<Integer> q = new RingBufferQueue(QUEUE_CAPACITY);
     Instant start = Instant.now();
 
     for (int i = 0; i < 1_000_000; i++) {

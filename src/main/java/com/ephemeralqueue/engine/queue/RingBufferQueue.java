@@ -12,7 +12,7 @@ import java.util.Queue;
  *
  * It is also not as performant as the built-in implementations.
  */
-public class EphemeralQueue implements Queue<Integer> {
+public class RingBufferQueue implements Queue<Integer> {
   public static final String NOT_SUPPORTED_YET_MESSAGE = "Not supported yet.";
 
   private final int[] memory;
@@ -26,7 +26,7 @@ public class EphemeralQueue implements Queue<Integer> {
   private int   front = 0;
   private int   rear  = 0;
 
-  public EphemeralQueue(int capacity) {
+  public RingBufferQueue(int capacity) {
     /*
     Required +1 to capacity for managing pointers.
      */

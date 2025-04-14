@@ -1,6 +1,6 @@
 package com.ephemeralqueue.engine.multithreadedinvestigation;
 
-import com.ephemeralqueue.engine.queue.EphemeralQueue;
+import com.ephemeralqueue.engine.queue.RingBufferQueue;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class UsingLinkedEnqueuer {
    * it is enqueue to the ephemeral queue in a single thread.
    */
   private static void usingConcurrentLinkedEnqueuer() {
-    Queue<Integer> q = new EphemeralQueue(QUEUE_LENGTH);
+    Queue<Integer> q = new RingBufferQueue(QUEUE_LENGTH);
     ConcurrentLinkedQueue<Integer> enqueues = new ConcurrentLinkedQueue<Integer>();
 
     LinearizedEnqueuer t1 = new LinearizedEnqueuer(enqueues, 1);

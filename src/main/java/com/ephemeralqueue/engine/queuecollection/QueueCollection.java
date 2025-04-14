@@ -19,10 +19,10 @@ import java.util.concurrent.ArrayBlockingQueue;
 public class QueueCollection {
   public static final String                        QUEUE_NOT_FOUND_MESSAGE    = "Queue not found.";
   public static final String                        COLLECTION_IS_FULL_MESSAGE = "Collection is Full.";
-  public static final int                           DEFAULT_SIZE               = 100;
+  public static final int                           DEFAULT_SIZE               = 100_000;
 
   private final       int                           maxQueueLength;
-  private final       Queue<Integer>[] collection;
+  private final       Queue<Integer>[]              collection;
 
   public QueueCollection(int maxCollectionSize, int maxQueueLength) {
     this.maxQueueLength = maxQueueLength;
