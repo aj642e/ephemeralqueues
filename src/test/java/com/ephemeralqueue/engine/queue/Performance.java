@@ -1,18 +1,25 @@
 package com.ephemeralqueue.engine.queue;
 
+import org.junit.jupiter.api.Test;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Queue;
 
-public class LoadTests {
-  private static final int QUEUE_LENGTH = 100_000;
+public class Performance {
+  private static final int QUEUE_CAPACITY = 100_000;
 
-  public static void main(String[] args) {
+  @Test
+  public void main() {
     loadTestOneQueue();
   }
 
   private static void loadTestOneQueue() {
-    Queue<Integer> q = new EphemeralQueue(QUEUE_LENGTH);
+    /**
+     * As it turns out, my implementation is 3X worse performance than
+     * Array Blocking Queue and Concurrent Linked Queue.
+     */
+    Queue<Integer> q = new EphemeralQueue(QUEUE_CAPACITY);
     Instant start = Instant.now();
 
     for (int i = 0; i < 1_000_000; i++) {

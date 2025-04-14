@@ -1,6 +1,7 @@
-package com.ephemeralqueue.engine.queue.multithreadedinvestigation;
+package com.ephemeralqueue.engine.multithreadedinvestigation;
 
 import com.ephemeralqueue.engine.queue.EphemeralQueue;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,8 @@ public class UsingLinkedEnqueuer {
   private static final int QUEUE_LENGTH = 100_000;
   private static final List<Integer> result = new ArrayList<>();
 
-  public static void main(String[] args) {
+  @Test
+  public void main() {
     usingConcurrentLinkedEnqueuer();
   }
 
@@ -54,7 +56,7 @@ public class UsingLinkedEnqueuer {
     System.out.println(result);
   }
 
-  static class LinearizedEnqueuer extends Thread {
+  private static class LinearizedEnqueuer extends Thread {
     Queue<Integer> queue;
     int multiplier;
 

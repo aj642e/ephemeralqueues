@@ -9,6 +9,8 @@ import java.util.Queue;
  * A ring-buffered version of a Queue.
  *
  * It is not thread safe.
+ *
+ * It is also not as performant as the built-in implementations.
  */
 public class EphemeralQueue implements Queue<Integer> {
   public static final String NOT_SUPPORTED_YET_MESSAGE = "Not supported yet.";
@@ -24,11 +26,11 @@ public class EphemeralQueue implements Queue<Integer> {
   private int   front = 0;
   private int   rear  = 0;
 
-  public EphemeralQueue(int length) {
+  public EphemeralQueue(int capacity) {
     /*
-    Required +1 to length for managing pointers.
+    Required +1 to capacity for managing pointers.
      */
-    memory = new int[length + 1];
+    memory = new int[capacity + 1];
   }
 
   public boolean add(Integer val) {

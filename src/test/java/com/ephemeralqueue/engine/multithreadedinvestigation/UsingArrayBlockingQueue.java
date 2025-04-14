@@ -1,4 +1,6 @@
-package com.ephemeralqueue.engine.queue.multithreadedinvestigation;
+package com.ephemeralqueue.engine.multithreadedinvestigation;
+
+import org.junit.jupiter.api.Test;
 
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -13,7 +15,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 public class UsingArrayBlockingQueue {
   private static final int QUEUE_LENGTH = 100_000;
 
-  public static void main(String[] args) {
+  @Test
+  public void main() {
     usingTwoThreadsAndArrayBlockingQueue();
   }
 
@@ -44,7 +47,7 @@ public class UsingArrayBlockingQueue {
     System.out.println(q.poll());
   }
 
-  static class ArrayBlockingQueueClientThread extends Thread {
+  private static class ArrayBlockingQueueClientThread extends Thread {
     Queue<Integer> q;
     int multiplier;
 

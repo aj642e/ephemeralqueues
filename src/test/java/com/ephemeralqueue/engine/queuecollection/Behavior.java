@@ -1,14 +1,17 @@
 package com.ephemeralqueue.engine.queuecollection;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.NoSuchElementException;
 
-class QueueCollectionTest {
-  public static final int FIRST_VAL  = 10;
-  public static final int SECOND_VAL = 20;
-  public static final int THIRD_VAL  = 30;
-  public static final int FOURTH_VAL = 40;
+class Behavior {
+  private static final int FIRST_VAL  = 10;
+  private static final int SECOND_VAL = 20;
+  private static final int THIRD_VAL  = 30;
+  private static final int FOURTH_VAL = 40;
 
-  public static void main(String[] args) {
+  @Test
+  public void main() {
     singleQueue();
     twoQueues();
     collectionFull();
@@ -25,16 +28,16 @@ class QueueCollectionTest {
     queueCollection.add(q.id(), THIRD_VAL);
     queueCollection.add(q.id(), FOURTH_VAL);
 
-    QueueValue v = queueCollection.remove(q.id());
+    QueueValue v = queueCollection.poll(q.id());
     System.out.println(v.value() == FIRST_VAL);
 
-    v = queueCollection.remove(q.id());
+    v = queueCollection.poll(q.id());
     System.out.println(v.value() == SECOND_VAL);
 
-    v = queueCollection.remove(q.id());
+    v = queueCollection.poll(q.id());
     System.out.println(v.value() == THIRD_VAL);
 
-    v = queueCollection.remove(q.id());
+    v = queueCollection.poll(q.id());
     System.out.println(v.value() == FOURTH_VAL);
   }
 
@@ -57,44 +60,33 @@ class QueueCollectionTest {
     queueCollection.add(q2.id(), FIRST_VAL);
 
     //Poll the Queues.
-    QueueValue v = queueCollection.remove(q.id());
+    QueueValue v = queueCollection.poll(q.id());
     System.out.println(v.value() == FIRST_VAL);
 
-    v = queueCollection.remove(q.id());
+    v = queueCollection.poll(q.id());
     System.out.println(v.value() == SECOND_VAL);
 
-    v = queueCollection.remove(q.id());
+    v = queueCollection.poll(q.id());
     System.out.println(v.value() == THIRD_VAL);
 
-    v = queueCollection.remove(q.id());
+    v = queueCollection.poll(q.id());
     System.out.println(v.value() == FOURTH_VAL);
 
-    v = queueCollection.remove(q2.id());
+    v = queueCollection.poll(q2.id());
     System.out.println(v.value() == FOURTH_VAL);
 
-    v = queueCollection.remove(q2.id());
+    v = queueCollection.poll(q2.id());
     System.out.println(v.value() == THIRD_VAL);
 
-    v = queueCollection.remove(q2.id());
+    v = queueCollection.poll(q2.id());
     System.out.println(v.value() == SECOND_VAL);
 
-    v = queueCollection.remove(q2.id());
+    v = queueCollection.poll(q2.id());
     System.out.println(v.value() == FIRST_VAL);
 
-    // Attempt to poll empty queues.
-    try {
-      queueCollection.remove(q2.id());
-      System.out.println(false);
-    } catch (NoSuchElementException e) {
-      System.out.println(true);
-    }
-
-    try {
-      queueCollection.remove(q.id());
-      System.out.println(false);
-    } catch (NoSuchElementException e) {
-      System.out.println(true);
-    }
+    // Poll empty queues returns null.
+    System.out.println(queueCollection.poll(q2.id()).value() == null);
+    System.out.println(queueCollection.poll(q.id()).value() == null);
 
     //Delete queues.
     queueCollection.deleteQueue(q.id());

@@ -1,20 +1,42 @@
 package com.ephemeralqueue.api.controller;
 
-import com.ephemeralqueue.api.example.restservice.Greeting;
+import com.ephemeralqueue.engine.queuecollection.QueueCollection;
+import com.ephemeralqueue.engine.queuecollection.QueueId;
+import com.ephemeralqueue.engine.queuecollection.QueueValue;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 public class QueueController {
+  private final QueueCollection queueCollection;
 
-  private static final String template = "Hello, %s!";
-  private final AtomicLong counter = new AtomicLong();
+  public QueueController() {
+    this.queueCollection = new QueueCollection();
+  }
 
-  @GetMapping("/greeting")
-  public Greeting greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
-    return new Greeting(counter.incrementAndGet(), String.format(template, name));
+  @PostMapping("/queue")
+  public int create() {
+    QueueId id = queueCollection.createQueue();
+    return id.id();
+  }
+
+  @PostMapping("/queue/{id}/addition/{value}")
+  public void add(@PathVariable int id,
+                  @PathVariable int value) {
+    queueCollection.add(id, value);
+  }
+
+  @GetMapping("/polling/{id}")
+  public Integer poll(@PathVariable int id) {
+    QueueValue val = queueCollection.poll(id);
+    return val.value();
+  }
+
+  @DeleteMapping("/queue/{id}")
+  public void delete(@PathVariable int id) {
+    queueCollection.deleteQueue(id);
   }
 }
