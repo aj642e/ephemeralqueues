@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 
 public class Performance {
   private static final int QUEUE_CAPACITY = 100_000;
@@ -18,11 +19,14 @@ public class Performance {
     /**
      * As it turns out, my implementation is 3X worse performance than
      * Array Blocking Queue and Concurrent Linked Queue.
+     *
+     * ... what now it's 8x faster? no idea.
      */
     Queue<Integer> q = new RingBufferQueue(QUEUE_CAPACITY);
+
     Instant start = Instant.now();
 
-    for (int i = 0; i < 1_000_000; i++) {
+    for (int i = 0; i < 2_000_000; i++) {
       q.add(i);
       q.remove();
     }

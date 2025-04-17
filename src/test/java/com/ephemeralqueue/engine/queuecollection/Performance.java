@@ -20,6 +20,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p>
  * Is this good or not?
  *
+ * Using only the number of threads as processors is way faster.
+ *
  */
 public class Performance {
   private static final int QUEUE_CAPACITY = 100_000;
@@ -34,6 +36,7 @@ public class Performance {
     multiThreadedAddingAndPolling(oneThousandQueues);
 
     // This is much faster than one thread per queue, this one is as many threads as processors.
+    // 4x faster, that is amazing to me that this worked.
     multiThreadedByProcessorCount(oneThousandQueues);
     /*
     The multithreaded is faster by about 2x.
@@ -175,7 +178,7 @@ public class Performance {
 //    System.out.println("this many pollings were made: " + count.get());
   }
 
-  private static void createQueues(int numQueues, QueueCollection queueCollection) {
+  public static void createQueues(int numQueues, QueueCollection queueCollection) {
     for (int i = 0; i < numQueues; i++) {
       queueCollection.createQueue();
     }

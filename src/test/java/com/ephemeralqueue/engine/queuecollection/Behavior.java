@@ -1,7 +1,7 @@
 package com.ephemeralqueue.engine.queuecollection;
 
+import com.ephemeralqueue.TestUtil;
 import com.ephemeralqueue.engine.queuecollection.entities.QueueId;
-import com.ephemeralqueue.engine.queuecollection.entities.QueueValue;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -9,19 +9,16 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
-class Behavior {
-  private static final int FIRST_VAL  = 10;
-  private static final int SECOND_VAL = 20;
-  private static final int THIRD_VAL  = 30;
-  private static final int FOURTH_VAL = 40;
+import static com.ephemeralqueue.engine.queuecollection.Performance.createQueues;
 
+class Behavior {
   @Test
-  public void main() {
+  public void main() throws InterruptedException {
     singleQueue();
-    twoQueues();
+    manyQueues();
     collectionFull();
     deleteTwice();
-    queueCreationIsNotMonotonic();
+    queueCreationIdsIsMonotonic();
   }
 
   public static void singleQueue() {
@@ -45,73 +42,76 @@ class Behavior {
       result.add(queueCollection.poll(q.id()).value());
     }
 
-    System.out.println(result.equals(vals));
+    TestUtil.assertTrue(result.equals(vals));
   }
 
-  public static void twoQueues() {
-    QueueCollection queueCollection = new QueueCollection(2, 4);
+  public static void manyQueues() throws InterruptedException {
+    QueueCollection queueCollection = new QueueCollection(100, 100);
 
-    //Create Queues.
-    QueueId q = queueCollection.createQueue();
-    QueueId q2 = queueCollection.createQueue();
+    createQueues(100, queueCollection);
 
-    //Add to Queues.
-    queueCollection.add(q.id(), FIRST_VAL);
-    queueCollection.add(q.id(), SECOND_VAL);
-    queueCollection.add(q.id(), THIRD_VAL);
-    queueCollection.add(q.id(), FOURTH_VAL);
+    List<Thread> threads = new ArrayList<>();
 
-    queueCollection.add(q2.id(), FOURTH_VAL);
-    queueCollection.add(q2.id(), THIRD_VAL);
-    queueCollection.add(q2.id(), SECOND_VAL);
-    queueCollection.add(q2.id(), FIRST_VAL);
+    for (int i = 0; i < 100; i++) {
+      Thread thread = new QueueClient(i, queueCollection);
+      threads.add(thread);
+    }
 
-    //Poll the Queues.
-    QueueValue v = queueCollection.poll(q.id());
-    System.out.println(v.value() == FIRST_VAL);
+    for (Thread thread : threads) {
+      thread.start();
+    }
 
-    v = queueCollection.poll(q.id());
-    System.out.println(v.value() == SECOND_VAL);
-
-    v = queueCollection.poll(q.id());
-    System.out.println(v.value() == THIRD_VAL);
-
-    v = queueCollection.poll(q.id());
-    System.out.println(v.value() == FOURTH_VAL);
-
-    v = queueCollection.poll(q2.id());
-    System.out.println(v.value() == FOURTH_VAL);
-
-    v = queueCollection.poll(q2.id());
-    System.out.println(v.value() == THIRD_VAL);
-
-    v = queueCollection.poll(q2.id());
-    System.out.println(v.value() == SECOND_VAL);
-
-    v = queueCollection.poll(q2.id());
-    System.out.println(v.value() == FIRST_VAL);
-
-    // Poll empty queues returns null.
-    System.out.println(queueCollection.poll(q2.id()).value() == null);
-    System.out.println(queueCollection.poll(q.id()).value() == null);
+    for (Thread thread : threads) {
+      thread.join();
+    }
 
     //Delete queues.
-    queueCollection.deleteQueue(q.id());
-    queueCollection.deleteQueue(q2.id());
+    queueCollection.deleteQueue(1);
+    queueCollection.deleteQueue(2);
 
     // Attempt to add after deleting.
     try {
-      queueCollection.add(q2.id(), FOURTH_VAL);
-      System.out.println(false);
+      queueCollection.add(2, new Random().nextInt());
+      TestUtil.assertTrue(false);
     } catch (NoSuchElementException e) {
-      System.out.println(true);
+      TestUtil.assertTrue(true);
     }
 
     try {
-      queueCollection.add(q.id(), FOURTH_VAL);
-      System.out.println(false);
+      queueCollection.add(1, new Random().nextInt());
+      TestUtil.assertTrue(false);
     } catch (NoSuchElementException e) {
-      System.out.println(true);
+      TestUtil.assertTrue(true);
+    }
+  }
+
+  static class QueueClient extends Thread {
+    QueueCollection queueCollection;
+    int queueId;
+
+    QueueClient(int queueId, QueueCollection queueCollection) {
+      this.queueId = queueId;
+      this.queueCollection = queueCollection;
+    }
+
+    public void run() {
+      Random r = new Random();
+      List<Integer> vals = new ArrayList<>();
+      List<Integer> result = new ArrayList<>();
+
+      for (int i = 0; i < 100; i++) {
+        vals.add(r.nextInt());
+      }
+
+      for (int i = 0; i < 100; i++) {
+        queueCollection.add(queueId, vals.get(i));
+      }
+
+      for (int i = 0; i < 100; i++) {
+        result.add(queueCollection.poll(queueId).value());
+      }
+
+      TestUtil.assertTrue(result.equals(vals));
     }
   }
 
@@ -124,28 +124,30 @@ class Behavior {
 
     try {
       queueCollection.createQueue();
-      System.out.println(false);
+      TestUtil.assertTrue(false);
     } catch (IllegalStateException e) {
-      System.out.println(true);
+      TestUtil.assertTrue(true);
     }
   }
 
-  public static void queueCreationIsNotMonotonic() {
+  public static void queueCreationIdsIsMonotonic() {
     QueueCollection queueCollection = new QueueCollection(QueueCollection.DEFAULT_SIZE, QueueCollection.DEFAULT_SIZE);
 
     QueueId id1 = queueCollection.createQueue();
     QueueId id2 = queueCollection.createQueue();
     QueueId id3 = queueCollection.createQueue();
 
-    System.out.println(id1.id() == 0);
-    System.out.println(id2.id() == 1);
-    System.out.println(id3.id() == 2);
+    TestUtil.assertTrue(id1.id() == 0);
+    TestUtil.assertTrue(id2.id() == 1);
+    TestUtil.assertTrue(id3.id() == 2);
 
     queueCollection.deleteQueue(id3.id());
 
     QueueId id4 = queueCollection.createQueue();
+    QueueId id5 = queueCollection.createQueue();
 
-    System.out.println(id4.id() == 2);
+    TestUtil.assertTrue(id4.id() == 3);
+    TestUtil.assertTrue(id5.id() == 4);
   }
 
   public static void deleteTwice() {
@@ -158,6 +160,6 @@ class Behavior {
     // Try to delete again and nothing should happen.
     queueCollection.deleteQueue(q.id());
 
-    System.out.println(true);
+    TestUtil.assertTrue(true);
   }
 }

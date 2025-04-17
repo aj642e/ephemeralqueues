@@ -23,6 +23,7 @@ public class QueueCollection {
   public static final String                        QUEUE_NOT_FOUND_MESSAGE    = "Queue not found.";
   public static final String                        COLLECTION_IS_FULL_MESSAGE = "Collection is Full.";
   public static final int                           DEFAULT_SIZE               = 100_000;
+  private             int                           nextQueueId                = 0;
 
   private final       int                           maxQueueLength;
   private final       Queue<Integer>[]              collection;
@@ -72,10 +73,10 @@ public class QueueCollection {
   }
 
   private int getNewQueueId() throws IllegalStateException {
-    for (int i = 0; i < collection.length; i++) {
-      if (collection[i] == null) return i;
+    if (nextQueueId >= collection.length) {
+      throw new IllegalStateException(COLLECTION_IS_FULL_MESSAGE);
     }
 
-    throw new IllegalStateException(COLLECTION_IS_FULL_MESSAGE);
+    return nextQueueId++;
   }
 }

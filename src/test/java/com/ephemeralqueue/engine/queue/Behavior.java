@@ -1,5 +1,6 @@
 package com.ephemeralqueue.engine.queue;
 
+import com.ephemeralqueue.TestUtil;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -31,20 +32,12 @@ public class Behavior {
     return new RingBufferQueue(QUEUE_CAPACITY);
   }
 
-  private static void assertTest(boolean result) {
-    if (!result) {
-      throw new RuntimeException("Test failed, see stack trace for details");
-    }
-
-    assertions.add(true);
-  }
-
   private static void assert_empty_queue(Queue<Integer> q) {
     try {
       q.remove();
-      assertTest(false);
+      TestUtil.assertTrue(false, assertions);
     } catch (NoSuchElementException e) {
-      assertTest(true);
+      TestUtil.assertTrue(true, assertions);
     }
   }
 
@@ -53,16 +46,16 @@ public class Behavior {
     Queue<Integer> q = getQueue();
 
     for (int i = 0; i < QUEUE_CAPACITY / 2; i++) {
-      assertTest(q.add(i));
+      TestUtil.assertTrue(q.add(i), assertions);
     }
 
     for (int i = 0; i < QUEUE_CAPACITY / 2; i++) {
-      assertTest((int) q.remove() == i);
-      assertTest(q.add(i * 10));
+      TestUtil.assertTrue((int) q.remove() == i, assertions);
+      TestUtil.assertTrue(q.add(i * 10), assertions);
     }
 
     for (int i = 0; i < QUEUE_CAPACITY / 2; i++) {
-      assertTest((int) q.remove() == i*10);
+      TestUtil.assertTrue((int) q.remove() == i*10, assertions);
     }
   }
 
@@ -70,29 +63,29 @@ public class Behavior {
     Queue<Integer> q = getQueue();
 
     for (int i = 0; i < QUEUE_CAPACITY / 2; i++) {
-      assertTest(q.add(i));
+      TestUtil.assertTrue(q.add(i), assertions);
     }
 
     for (int i = 0; i < QUEUE_CAPACITY / 2; i++) {
-      assertTest((int) q.remove() == i);
+      TestUtil.assertTrue((int) q.remove() == i, assertions);
     }
 
     assert_empty_queue(q);
 
     for (int i = 0; i < QUEUE_CAPACITY / 2; i++) {
-      assertTest(q.add(i * 10));
+      TestUtil.assertTrue(q.add(i * 10), assertions);
     }
 
     for (int i = 0; i < QUEUE_CAPACITY / 2; i++) {
-      assertTest((int) q.remove() == i*10);
+      TestUtil.assertTrue((int) q.remove() == i*10, assertions);
     }
 
     for (int i = 0; i < QUEUE_CAPACITY / 2; i++) {
-      assertTest(q.add(i * 100));
+      TestUtil.assertTrue(q.add(i * 100), assertions);
     }
 
     for (int i = 0; i < QUEUE_CAPACITY / 2; i++) {
-      assertTest((int) q.remove() == i*100);
+      TestUtil.assertTrue((int) q.remove() == i*100, assertions);
     }
   }
 
@@ -100,25 +93,25 @@ public class Behavior {
     Queue<Integer> q = getQueue();
 
     for (int i = 0; i < QUEUE_CAPACITY; i++) {
-      assertTest(q.add(i));
+      TestUtil.assertTrue(q.add(i), assertions);
     }
 
-    assertTest(!q.add(1));
+    TestUtil.assertTrue(!q.add(1), assertions);
 
     for (int i = 0; i < QUEUE_CAPACITY; i++) {
-      assertTest((int) q.remove() == i);
+      TestUtil.assertTrue((int) q.remove() == i, assertions);
     }
 
     assert_empty_queue(q);
 
     for (int i = 0; i < QUEUE_CAPACITY; i++) {
-      assertTest(q.add(i * 10));
+      TestUtil.assertTrue(q.add(i * 10), assertions);
     }
 
-    assertTest(!q.add(1));
+    TestUtil.assertTrue(!q.add(1), assertions);
 
     for (int i = 0; i < QUEUE_CAPACITY; i++) {
-      assertTest((int) q.remove() == i*10);
+      TestUtil.assertTrue((int) q.remove() == i*10, assertions);
     }
   }
 }
