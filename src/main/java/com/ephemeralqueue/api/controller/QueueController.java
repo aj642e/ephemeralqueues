@@ -1,8 +1,8 @@
 package com.ephemeralqueue.api.controller;
 
 import com.ephemeralqueue.engine.queuecollection.QueueCollection;
-import com.ephemeralqueue.engine.queuecollection.QueueId;
-import com.ephemeralqueue.engine.queuecollection.QueueValue;
+import com.ephemeralqueue.engine.queuecollection.entities.QueueId;
+import com.ephemeralqueue.engine.queuecollection.entities.QueueValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

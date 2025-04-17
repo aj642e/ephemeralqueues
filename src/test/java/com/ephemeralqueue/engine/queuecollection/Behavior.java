@@ -1,8 +1,13 @@
 package com.ephemeralqueue.engine.queuecollection;
 
+import com.ephemeralqueue.engine.queuecollection.entities.QueueId;
+import com.ephemeralqueue.engine.queuecollection.entities.QueueValue;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Random;
 
 class Behavior {
   private static final int FIRST_VAL  = 10;
@@ -16,29 +21,31 @@ class Behavior {
     twoQueues();
     collectionFull();
     deleteTwice();
+    queueCreationIsNotMonotonic();
   }
 
   public static void singleQueue() {
-    QueueCollection queueCollection = new QueueCollection(1, 4);
+    QueueCollection queueCollection = new QueueCollection(1, 100);
 
     QueueId q = queueCollection.createQueue();
 
-    queueCollection.add(q.id(), FIRST_VAL);
-    queueCollection.add(q.id(), SECOND_VAL);
-    queueCollection.add(q.id(), THIRD_VAL);
-    queueCollection.add(q.id(), FOURTH_VAL);
+    Random r = new Random();
+    List<Integer> vals = new ArrayList<>();
+    List<Integer> result = new ArrayList<>();
 
-    QueueValue v = queueCollection.poll(q.id());
-    System.out.println(v.value() == FIRST_VAL);
+    for (int i = 0; i < 100; i++) {
+      vals.add(r.nextInt());
+    }
 
-    v = queueCollection.poll(q.id());
-    System.out.println(v.value() == SECOND_VAL);
+    for (int i = 0; i < 100; i++) {
+      queueCollection.add(q.id(), vals.get(i));
+    }
 
-    v = queueCollection.poll(q.id());
-    System.out.println(v.value() == THIRD_VAL);
+    for (int i = 0; i < 100; i++) {
+      result.add(queueCollection.poll(q.id()).value());
+    }
 
-    v = queueCollection.poll(q.id());
-    System.out.println(v.value() == FOURTH_VAL);
+    System.out.println(result.equals(vals));
   }
 
   public static void twoQueues() {
@@ -109,9 +116,9 @@ class Behavior {
   }
 
   public static void collectionFull() {
-    QueueCollection queueCollection = new QueueCollection(QueueCollection.DEFAULT_SIZE, QueueCollection.DEFAULT_SIZE);
+    QueueCollection queueCollection = new QueueCollection(10, QueueCollection.DEFAULT_SIZE);
 
-    for (int i = 0; i < QueueCollection.DEFAULT_SIZE; i++) {
+    for (int i = 0; i < 10; i++) {
       queueCollection.createQueue();
     }
 
@@ -121,6 +128,24 @@ class Behavior {
     } catch (IllegalStateException e) {
       System.out.println(true);
     }
+  }
+
+  public static void queueCreationIsNotMonotonic() {
+    QueueCollection queueCollection = new QueueCollection(QueueCollection.DEFAULT_SIZE, QueueCollection.DEFAULT_SIZE);
+
+    QueueId id1 = queueCollection.createQueue();
+    QueueId id2 = queueCollection.createQueue();
+    QueueId id3 = queueCollection.createQueue();
+
+    System.out.println(id1.id() == 0);
+    System.out.println(id2.id() == 1);
+    System.out.println(id3.id() == 2);
+
+    queueCollection.deleteQueue(id3.id());
+
+    QueueId id4 = queueCollection.createQueue();
+
+    System.out.println(id4.id() == 2);
   }
 
   public static void deleteTwice() {

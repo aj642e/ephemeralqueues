@@ -1,5 +1,6 @@
 package com.ephemeralqueue.engine.queuecollection;
 
+import com.ephemeralqueue.engine.queuecollection.entities.QueueValue;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -10,13 +11,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * General findings so far:
- *
+ * <p>
  * Multithreaded test:
  * 1000 queues, 10,000 operations == .6 seconds (675071000 ns).
  * 5000 queues, 100K operations == 40 seconds.
- *
+ * <p>
  * Same cost per operation (~90 ns).
- *
+ * <p>
  * Is this good or not?
  *
  */
@@ -26,12 +27,18 @@ public class Performance {
 
   @Test
   public void main() throws InterruptedException {
+//    https://stackoverflow.com/questions/4436422/how-does-java-makes-use-of-multiple-cores
+//    System.out.println(Runtime.getRuntime().availableProcessors());
+
     int oneThousandQueues = 1000;
     multiThreadedAddingAndPolling(oneThousandQueues);
+
+    // This is much faster than one thread per queue, this one is as many threads as processors.
+    multiThreadedByProcessorCount(oneThousandQueues);
     /*
     The multithreaded is faster by about 2x.
      */
-    singleThreadedAddingAndPolling(oneThousandQueues);
+//    singleThreadedAddingAndPolling(oneThousandQueues);
   }
 
   private static void singleThreadedAddingAndPolling(int numQueues) {
@@ -54,8 +61,10 @@ public class Performance {
   }
 
   private static void multiThreadedAddingAndPolling(int numQueues) throws InterruptedException {
-    count.set(0);
+//    count.set(0);
+
     QueueCollection queueCollection = new QueueCollection(numQueues, QUEUE_CAPACITY);
+
     Instant start = Instant.now();
 
     createQueues(numQueues, queueCollection);
@@ -64,6 +73,39 @@ public class Performance {
 
     for (int i = 0; i < numQueues; i++) {
       Thread thread = new QueueClient(i, queueCollection);
+      threads.add(thread);
+    }
+
+    for (Thread thread : threads) {
+      thread.start();
+    }
+
+    for (Thread thread : threads) {
+      thread.join();
+    }
+
+    Instant end = Instant.now();
+
+    printResults(numQueues, start, end, numQueues);
+  }
+
+  private static void multiThreadedByProcessorCount(int numQueues) throws InterruptedException {
+//    count.set(0);
+
+    QueueCollection queueCollection = new QueueCollection(numQueues, QUEUE_CAPACITY);
+
+    int threadCount = Runtime.getRuntime().availableProcessors();
+    int queuesPerThread = numQueues / threadCount;
+
+    Instant start = Instant.now();
+
+    // Does not require thread safety because all the queues are created first.
+    createQueues(numQueues, queueCollection);
+
+    List<Thread> threads = new ArrayList<>();
+
+    for (int i = 0; i < threadCount; i++) {
+      Thread thread = new QueueClientRanged(i*queuesPerThread,(i+1)*queuesPerThread, queueCollection);
       threads.add(thread);
     }
 
@@ -92,6 +134,25 @@ public class Performance {
     public void run() {
       addToQueue(queueCollection, queueId);
       pollQueue(queueCollection, queueId);
+    }
+  }
+
+  static class QueueClientRanged extends Thread {
+    QueueCollection queueCollection;
+    int start;
+    int end;
+
+    QueueClientRanged(int start, int end, QueueCollection queueCollection) {
+      this.start = start;
+      this.end = end;
+      this.queueCollection = queueCollection;
+    }
+
+    public void run() {
+      for (int i = start; i < end; i++) {
+        addToQueue(queueCollection, i);
+        pollQueue(queueCollection, i);
+      }
     }
   }
 

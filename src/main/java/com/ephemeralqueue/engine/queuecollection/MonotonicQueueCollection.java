@@ -19,20 +19,21 @@ import java.util.concurrent.ArrayBlockingQueue;
  *  ... so basically all accessing and managing the queue collection.
  *
  */
-public class QueueCollection {
+public class MonotonicQueueCollection {
   public static final String                        QUEUE_NOT_FOUND_MESSAGE    = "Queue not found.";
   public static final String                        COLLECTION_IS_FULL_MESSAGE = "Collection is Full.";
   public static final int                           DEFAULT_SIZE               = 100_000;
+  private             int                           nextQueueId                = 0;
 
   private final       int                           maxQueueLength;
   private final       Queue<Integer>[]              collection;
 
-  public QueueCollection(int maxCollectionSize, int maxQueueLength) {
+  public MonotonicQueueCollection(int maxCollectionSize, int maxQueueLength) {
     this.maxQueueLength = maxQueueLength;
     this.collection     = new ArrayBlockingQueue[maxCollectionSize];
   }
 
-  public QueueCollection() {
+  public MonotonicQueueCollection() {
     this(DEFAULT_SIZE, DEFAULT_SIZE);
   }
 
@@ -72,10 +73,10 @@ public class QueueCollection {
   }
 
   private int getNewQueueId() throws IllegalStateException {
-    for (int i = 0; i < collection.length; i++) {
-      if (collection[i] == null) return i;
+    if (nextQueueId >= collection.length) {
+      throw new IllegalStateException(COLLECTION_IS_FULL_MESSAGE);
     }
 
-    throw new IllegalStateException(COLLECTION_IS_FULL_MESSAGE);
+    return nextQueueId++;
   }
 }
