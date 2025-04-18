@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Page Title</title>
+</head>
+
+<body>
+    <p>
+        Ephemeral Queues: A globally available ephemeral messaging system.
+    </p>
+    <p>
+        Use cases:
+    </p>
+    <p>
+        Pass data from one place to another in a ordered way.
+    </p>
+    <p>
+        Details:
+    </p>
+    <p>
+        There are a total of 100,000 possible queues.
+        Queues are purged and deleted every 24 hours at 10 AM ET.
+    </p>
+    <p>
+        Ephemeral Queues only accept signed int32 values.
+    </p>
+    <p>
+        Once data is consumed it is deleted forever.
+    </p>
+    <p>
+        API:
+    <ul>
+        <li>
+            POST /queue -> queueId
+        </li>
+        <li>
+            GET /polling/:id/ -> nextVal
+        </li>
+        <li>
+            POST /queue/:id/addition -> null
+        </li>
+        <li>
+            DELETE /queue/:id -> null
+        </li>
+    </ul>
+    </p>
+    <p>
+        URL: sunfish-sacred-dogfish.ngrok-free.app
+    </p>
+
+    <p>
+        questions: aj642e AT proton DOT me.
+    </p>
+</body>
+
+</html>

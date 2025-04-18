@@ -1,11 +1,10 @@
 package com.ephemeralqueue.engine.queue;
 
-import com.ephemeralqueue.TestUtil;
+import com.ephemeralqueue.Shared;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
 public class Behavior {
@@ -33,12 +32,7 @@ public class Behavior {
   }
 
   private static void assert_empty_queue(Queue<Integer> q) {
-    try {
-      q.remove();
-      TestUtil.assertTrue(false, assertions);
-    } catch (NoSuchElementException e) {
-      TestUtil.assertTrue(true, assertions);
-    }
+    Shared.assertTrue(q.poll() == null);
   }
 
 
@@ -46,16 +40,16 @@ public class Behavior {
     Queue<Integer> q = getQueue();
 
     for (int i = 0; i < QUEUE_CAPACITY / 2; i++) {
-      TestUtil.assertTrue(q.add(i), assertions);
+      Shared.assertTrue(q.add(i), assertions);
     }
 
     for (int i = 0; i < QUEUE_CAPACITY / 2; i++) {
-      TestUtil.assertTrue((int) q.remove() == i, assertions);
-      TestUtil.assertTrue(q.add(i * 10), assertions);
+      Shared.assertTrue((int) q.poll() == i, assertions);
+      Shared.assertTrue(q.add(i * 10), assertions);
     }
 
     for (int i = 0; i < QUEUE_CAPACITY / 2; i++) {
-      TestUtil.assertTrue((int) q.remove() == i*10, assertions);
+      Shared.assertTrue((int) q.poll() == i*10, assertions);
     }
   }
 
@@ -63,55 +57,46 @@ public class Behavior {
     Queue<Integer> q = getQueue();
 
     for (int i = 0; i < QUEUE_CAPACITY / 2; i++) {
-      TestUtil.assertTrue(q.add(i), assertions);
+      Shared.assertTrue(q.add(i), assertions);
     }
 
     for (int i = 0; i < QUEUE_CAPACITY / 2; i++) {
-      TestUtil.assertTrue((int) q.remove() == i, assertions);
+      Shared.assertTrue((int) q.poll() == i, assertions);
     }
 
     assert_empty_queue(q);
 
     for (int i = 0; i < QUEUE_CAPACITY / 2; i++) {
-      TestUtil.assertTrue(q.add(i * 10), assertions);
+      Shared.assertTrue(q.add(i * 10), assertions);
     }
 
     for (int i = 0; i < QUEUE_CAPACITY / 2; i++) {
-      TestUtil.assertTrue((int) q.remove() == i*10, assertions);
+      Shared.assertTrue((int) q.poll() == i*10, assertions);
     }
 
     for (int i = 0; i < QUEUE_CAPACITY / 2; i++) {
-      TestUtil.assertTrue(q.add(i * 100), assertions);
+      Shared.assertTrue(q.add(i * 100), assertions);
     }
 
     for (int i = 0; i < QUEUE_CAPACITY / 2; i++) {
-      TestUtil.assertTrue((int) q.remove() == i*100, assertions);
+      Shared.assertTrue((int) q.poll() == i*100, assertions);
     }
   }
 
   private static void enqueueAllAndDequeueAll() {
     Queue<Integer> q = getQueue();
 
-    for (int i = 0; i < QUEUE_CAPACITY; i++) {
-      TestUtil.assertTrue(q.add(i), assertions);
-    }
-
-    TestUtil.assertTrue(!q.add(1), assertions);
-
-    for (int i = 0; i < QUEUE_CAPACITY; i++) {
-      TestUtil.assertTrue((int) q.remove() == i, assertions);
-    }
+    Shared.testCompleteAddAndRemove(q, QUEUE_CAPACITY);
 
     assert_empty_queue(q);
 
-    for (int i = 0; i < QUEUE_CAPACITY; i++) {
-      TestUtil.assertTrue(q.add(i * 10), assertions);
-    }
+    Shared.testCompleteAddAndRemove(q, QUEUE_CAPACITY);
 
-    TestUtil.assertTrue(!q.add(1), assertions);
+    assert_empty_queue(q);
 
-    for (int i = 0; i < QUEUE_CAPACITY; i++) {
-      TestUtil.assertTrue((int) q.remove() == i*10, assertions);
-    }
+    Shared.assertTrue(q.add(1), assertions);
+    Shared.assertTrue(q.poll() == 1, assertions);
+
+    Shared.testCompleteAddAndRemove(q, QUEUE_CAPACITY-1);
   }
 }

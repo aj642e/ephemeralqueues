@@ -26,9 +26,12 @@ public class Performance {
 
     Instant start = Instant.now();
 
+    /*
+    This is the simplest, just testing the operations.
+     */
     for (int i = 0; i < 2_000_000; i++) {
       q.add(i);
-      q.remove();
+      q.poll();
     }
 
     Instant end = Instant.now();

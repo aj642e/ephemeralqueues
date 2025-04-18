@@ -51,9 +51,9 @@ public class RingBufferQueue implements Queue<Integer> {
     return true;
   }
 
-  public Integer remove() {
+  public Integer poll() {
     if (rear == front) {
-      throw new NoSuchElementException();
+      return null;
     }
 
     int next =
@@ -135,7 +135,7 @@ public class RingBufferQueue implements Queue<Integer> {
   }
 
   @Override
-  public Integer poll() {
+  public Integer remove() {
     throw new UnsupportedOperationException(NOT_SUPPORTED_YET_MESSAGE);
   }
 
